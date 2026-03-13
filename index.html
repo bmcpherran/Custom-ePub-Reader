@@ -13,10 +13,9 @@
   --text: #9D9D9D;
   --chapter: #68B5E8;
   --surface: #2a2a2a;
-  --surface2: #222222;
+  --surface2: #222;
   --border: #444;
-  --highlight: rgba(104,181,232,0.22);
-  --highlight-border: rgba(104,181,232,0.7);
+  --highlight: rgba(104,181,232,0.18);
   --panel-bg: #1e1e1e;
   --ui: #666;
   --ui-hover: #999;
@@ -24,23 +23,23 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Crimson Pro', Georgia, serif; }
 
-/* UPLOAD */
+/* ── UPLOAD ── */
 #upload-overlay { position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px; }
 #upload-overlay.hidden { display:none; }
-#drop-zone { width:400px;height:220px;border:2px dashed var(--border);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:border-color .2s,background .2s;background:var(--surface); }
-#drop-zone:hover,#drop-zone.dragover { border-color:var(--chapter);background:rgba(104,181,232,.05); }
-#drop-zone svg { color:var(--chapter);width:42px;height:42px; }
-#drop-title { font-family:'Raleway',sans-serif;font-size:16px;font-weight:300;color:var(--text);letter-spacing:.08em; }
+#drop-zone { width:380px;height:210px;border:2px dashed var(--border);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:border-color .2s,background .2s;background:var(--surface); }
+#drop-zone:hover, #drop-zone.dragover { border-color:var(--chapter);background:rgba(104,181,232,.05); }
+#drop-zone svg { color:var(--chapter);width:40px;height:40px; }
+#drop-title { font-family:'Raleway',sans-serif;font-size:15px;font-weight:300;color:var(--text);letter-spacing:.08em; }
 #drop-sub { font-family:'Raleway',sans-serif;font-size:11px;color:var(--ui); }
 #file-input { display:none; }
-#upload-btn { font-family:'Raleway',sans-serif;font-size:12px;letter-spacing:.1em;background:none;border:1px solid var(--chapter);color:var(--chapter);padding:9px 26px;border-radius:6px;cursor:pointer;transition:all .2s; }
+#upload-btn { font-family:'Raleway',sans-serif;font-size:12px;letter-spacing:.1em;background:none;border:1px solid var(--chapter);color:var(--chapter);padding:9px 24px;border-radius:6px;cursor:pointer;transition:all .2s; }
 #upload-btn:hover { background:var(--chapter);color:#1a1a1a; }
-#load-status { font-family:'Raleway',sans-serif;font-size:11px;color:var(--ui);letter-spacing:.05em; }
+#load-status { font-family:'Raleway',sans-serif;font-size:11px;color:var(--ui); }
 
-/* TOPBAR */
+/* ── TOPBAR ── */
 #topbar { position:fixed;top:0;left:0;right:0;height:46px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 18px;z-index:200;opacity:0;pointer-events:none;transition:opacity .25s; }
 #topbar.visible { opacity:1;pointer-events:all; }
-#close-btn { display:flex;align-items:center;gap:7px;background:none;border:none;color:var(--text);cursor:pointer;font-family:'Raleway',sans-serif;font-size:12px;letter-spacing:.05em;padding:4px 8px;border-radius:4px;transition:color .2s; }
+#close-btn { display:flex;align-items:center;gap:7px;background:none;border:none;color:var(--text);cursor:pointer;font-family:'Raleway',sans-serif;font-size:12px;letter-spacing:.04em;padding:4px 8px;border-radius:4px;transition:color .2s; }
 #close-btn:hover { color:var(--chapter); }
 #close-btn svg { width:14px;height:14px; }
 #book-title-top { font-family:'Raleway',sans-serif;font-size:12px;font-weight:300;color:var(--text);letter-spacing:.08em;position:absolute;left:50%;transform:translateX(-50%);max-width:40%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
@@ -50,118 +49,137 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .tb-btn.active { color:var(--chapter); }
 .tb-btn svg { width:16px;height:16px; }
 
-/* READER */
+/* ── READER ── */
 #reader { position:fixed;top:0;bottom:0;left:0;right:0; }
-#page-area { position:absolute;top:0;bottom:0;left:0;right:0;display:flex; }
-#zone-prev,#zone-next { position:absolute;top:0;bottom:0;width:14%;z-index:10;cursor:pointer; }
+
+/* Two columns, each independently scrollable */
+#page-area { position:absolute;inset:0;display:flex;transition:opacity .18s ease,transform .18s ease; }
+#col-left, #col-right { flex:1;height:100%;overflow-y:auto;position:relative; }
+#col-left { border-right:1px solid var(--border); }
+#col-left::-webkit-scrollbar, #col-right::-webkit-scrollbar { width:0; }
+
+.col-content {
+  padding: 52px 60px 80px;
+  font-size: 18px;
+  line-height: 1.82;
+  min-height: 100%;
+}
+
+/* Click zones for chapter navigation */
+#zone-prev, #zone-next { position:absolute;top:0;bottom:0;width:10%;z-index:10;cursor:pointer; }
 #zone-prev { left:0; }
 #zone-next { right:0; }
-.page-arrow { position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:15;opacity:0;transition:opacity .2s,background .2s;pointer-events:none; }
+
+.page-arrow { position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:15;opacity:0;transition:opacity .2s;pointer-events:none; }
 .page-arrow.show { opacity:1;pointer-events:all; }
 .page-arrow:hover { background:var(--surface2);color:var(--chapter); }
-#arrow-prev { left:10px; }
-#arrow-next { right:10px; }
-#col-left,#col-right { flex:1;overflow:hidden;position:relative; }
-#col-left { border-right:1px solid var(--border); }
-.col-frame { position:absolute;top:0;left:0;right:0;padding:52px 60px;font-size:18px;line-height:1.82;overflow:hidden; }
+#arrow-prev { left:8px; }
+#arrow-next { right:8px; }
 
-/* BOTTOMBAR */
+/* ── CONTENT STYLES ── */
+.col-content * { color:var(--text) !important; background:transparent !important; }
+.col-content p, .col-content div, .col-content span, .col-content li, .col-content td { font-family:'Crimson Pro',Georgia,serif !important; }
+.col-content a { color:var(--chapter) !important; text-decoration:none !important; pointer-events:none; }
+.col-content img { max-width:100% !important; height:auto !important; display:block; margin:.8em auto; border-radius:2px; }
+.col-content p { margin-bottom:.1em; hyphens:auto; -webkit-hyphens:auto; text-align:justify; }
+.col-content p+p { text-indent:1.5em; }
+.col-content h1, .col-content h2 { font-family:'Raleway',sans-serif !important; font-size:13px !important; font-weight:400 !important; color:var(--chapter) !important; letter-spacing:.13em !important; text-transform:uppercase !important; text-align:center !important; margin:0 0 22px !important; line-height:1.5 !important; text-indent:0 !important; }
+.col-content h3, .col-content h4, .col-content h5, .col-content h6 { font-family:'Raleway',sans-serif !important; font-size:11px !important; font-weight:400 !important; color:var(--chapter) !important; letter-spacing:.1em !important; text-transform:uppercase !important; margin:1.4em 0 .5em !important; text-indent:0 !important; }
+.col-content ul, .col-content ol { margin:.4em 0 .4em 1.4em; }
+.col-content li { margin-bottom:.2em; list-style-position:outside; }
+.col-content table { width:100%;border-collapse:collapse;margin:.8em 0;font-size:14px !important; }
+.col-content td, .col-content th { border:1px solid var(--border);padding:4px 8px; }
+.col-content blockquote { border-left:3px solid var(--chapter);padding-left:14px;margin:.8em 0;opacity:.85; }
+.col-content hr { border:none;border-top:1px solid var(--border);margin:1.5em 0; }
+.col-content sup, .col-content sub { font-size:.65em; }
+.col-content sup { vertical-align:super; }
+.col-content sub { vertical-align:sub; }
+
+/* ── ANNOTATION HIGHLIGHT ── */
+.ann-highlight {
+  background: var(--highlight) !important;
+  border-bottom: 2px solid var(--chapter) !important;
+  cursor: pointer;
+  border-radius: 1px;
+  padding: 0 1px;
+  transition: background .15s;
+}
+.ann-highlight:hover { background: rgba(104,181,232,.3) !important; }
+
+/* ── BOTTOMBAR ── */
 #bottombar { position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s; }
 #bottombar.visible { opacity:1;pointer-events:all; }
-#chapter-info { display:flex;align-items:center;gap:11px;padding:7px 18px 3px; }
+#chapter-info { display:flex;align-items:center;gap:10px;padding:7px 18px 3px; }
 #chapter-thumb { width:28px;height:40px;background:var(--surface2);border:1px solid var(--border);border-radius:2px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px; }
 #chapter-thumb img { width:100%;height:100%;object-fit:cover; }
 #chapter-text-info { flex:1; }
 #chapter-name-bottom { font-family:'Raleway',sans-serif;font-size:11px;color:var(--text);display:flex;align-items:center;gap:6px; }
 #chapter-name-bottom svg { width:11px;height:11px;color:var(--ui);flex-shrink:0; }
-#chapter-name-text { white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:480px; }
+#chapter-name-text { white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:500px; }
 #chapter-pages-remaining { font-family:'Raleway',sans-serif;font-size:10px;color:var(--ui);margin-top:1px; }
 #progress-row { display:flex;align-items:center;gap:10px;padding:3px 18px 4px; }
-#btn-first,#btn-last { background:none;border:none;color:var(--ui);cursor:pointer;padding:2px;transition:color .2s;display:flex; }
-#btn-first:hover,#btn-last:hover { color:var(--chapter); }
+#btn-first, #btn-last { background:none;border:none;color:var(--ui);cursor:pointer;padding:2px;transition:color .2s;display:flex; }
+#btn-first:hover, #btn-last:hover { color:var(--chapter); }
 #progress-bar-wrap { flex:1;height:3px;background:var(--border);border-radius:2px;cursor:pointer;position:relative; }
 #progress-bar-fill { height:100%;background:var(--chapter);border-radius:2px;width:0%;transition:width .3s; }
 #progress-thumb { position:absolute;top:50%;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;background:var(--chapter);left:0%;transition:left .3s; }
 #page-count-bottom { font-family:'Raleway',sans-serif;font-size:10px;color:var(--ui);text-align:center;padding-bottom:3px;letter-spacing:.05em; }
 
-/* PANELS */
-.panel { position:fixed;top:0;right:0;bottom:0;width:330px;background:var(--panel-bg);border-left:1px solid var(--border);z-index:300;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column; }
+/* ── PANELS ── */
+.panel { position:fixed;top:0;right:0;bottom:0;width:320px;background:var(--panel-bg);border-left:1px solid var(--border);z-index:300;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column; }
 .panel.open { transform:translateX(0); }
 .panel-header { display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid var(--border);flex-shrink:0; }
-.panel-title { font-family:'Raleway',sans-serif;font-size:12px;font-weight:400;color:var(--text);letter-spacing:.06em; }
+.panel-title { font-family:'Raleway',sans-serif;font-size:12px;color:var(--text);letter-spacing:.06em; }
 .panel-close { background:none;border:none;color:var(--ui);cursor:pointer;padding:3px;transition:color .2s;display:flex; }
 .panel-close:hover { color:var(--chapter); }
 .panel-close svg { width:16px;height:16px; }
 .panel-body { flex:1;overflow-y:auto;padding:5px 0; }
 .panel-body::-webkit-scrollbar { width:3px; }
 .panel-body::-webkit-scrollbar-thumb { background:var(--border);border-radius:2px; }
-.toc-item { padding:8px 16px;cursor:pointer;font-family:'Raleway',sans-serif;font-size:12px;font-weight:300;color:var(--ui-hover);transition:color .2s,background .2s;border-left:3px solid transparent;line-height:1.4; }
+
+.toc-item { padding:9px 16px;cursor:pointer;font-family:'Raleway',sans-serif;font-size:12px;font-weight:300;color:var(--ui-hover);border-left:3px solid transparent;line-height:1.4;transition:color .2s,background .2s; }
 .toc-item:hover { color:var(--text);background:rgba(255,255,255,.03); }
 .toc-item.active { color:var(--chapter);border-left-color:var(--chapter);background:rgba(104,181,232,.05); }
-.annotation-chapter-group { padding:7px 14px 3px; }
-.annotation-chapter-label { font-family:'Raleway',sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--chapter);background:rgba(104,181,232,.1);padding:3px 7px;border-radius:2px; }
-.annotation-item { display:flex;gap:8px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.04);align-items:flex-start;cursor:pointer; }
-.annotation-item:hover { background:rgba(255,255,255,.02); }
-.annotation-icon { color:var(--chapter);flex-shrink:0;margin-top:2px; }
-.annotation-icon svg { width:12px;height:12px; }
-.annotation-content { flex:1; }
-.annotation-time { font-family:'Raleway',sans-serif;font-size:10px;color:var(--ui);margin-bottom:3px; }
-.annotation-text { font-size:12px;color:var(--text);line-height:1.5; }
-.annotation-delete { background:none;border:none;color:var(--ui);cursor:pointer;padding:2px;transition:color .2s;flex-shrink:0; }
-.annotation-delete:hover { color:#e07070; }
-.no-annotations { padding:26px 16px;text-align:center;font-family:'Raleway',sans-serif;font-size:12px;color:var(--ui);line-height:1.6; }
 
-/* ANNOTATION POPUP */
-#annotation-popup { position:fixed;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;z-index:400;display:none;box-shadow:0 8px 32px rgba(0,0,0,.5);min-width:200px;max-width:270px; }
-#annotation-popup.show { display:block; }
-#ann-selected-text { font-size:11px;color:var(--ui);margin-bottom:7px;font-style:italic;max-height:50px;overflow:hidden;line-height:1.4;border-bottom:1px solid var(--border);padding-bottom:7px; }
-#ann-note-input { width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Crimson Pro',serif;font-size:14px;padding:5px 8px;border-radius:4px;resize:none;height:58px;margin-bottom:7px;outline:none;transition:border-color .2s; }
-#ann-note-input:focus { border-color:var(--chapter); }
-#ann-note-input::placeholder { color:var(--ui); }
-.ann-popup-btns { display:flex;gap:6px;justify-content:flex-end; }
-.ann-btn { font-family:'Raleway',sans-serif;font-size:11px;letter-spacing:.04em;padding:4px 10px;border-radius:4px;cursor:pointer;transition:all .2s;border:1px solid var(--border); }
-.ann-btn-cancel { background:none;color:var(--ui); }
-.ann-btn-cancel:hover { color:var(--text);border-color:var(--ui); }
-.ann-btn-save { background:var(--chapter);color:#1a1a1a;border-color:var(--chapter);font-weight:500; }
-.ann-btn-save:hover { background:#89cbf0; }
+.ann-group-label { font-family:'Raleway',sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--chapter);background:rgba(104,181,232,.1);padding:3px 8px;border-radius:2px;margin:8px 14px 3px; }
+.ann-item { display:flex;gap:8px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;align-items:flex-start; }
+.ann-item:hover { background:rgba(255,255,255,.02); }
+.ann-icon { color:var(--chapter);flex-shrink:0;margin-top:2px; }
+.ann-icon svg { width:12px;height:12px; }
+.ann-content { flex:1; }
+.ann-time { font-family:'Raleway',sans-serif;font-size:10px;color:var(--ui);margin-bottom:2px; }
+.ann-text { font-size:12px;color:var(--text);line-height:1.5; }
+.ann-del { background:none;border:none;color:var(--ui);cursor:pointer;padding:2px;transition:color .2s;flex-shrink:0; }
+.ann-del:hover { color:#e07070; }
+.no-ann { padding:24px 16px;text-align:center;font-family:'Raleway',sans-serif;font-size:12px;color:var(--ui);line-height:1.6; }
 
-/* FONT PANEL */
-#font-panel { position:fixed;top:53px;right:16px;background:var(--panel-bg);border:1px solid var(--border);border-radius:8px;padding:13px 15px;z-index:300;display:none;box-shadow:0 8px 32px rgba(0,0,0,.5);min-width:180px; }
+/* ── ANNOTATION POPUP ── */
+#ann-popup { position:fixed;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;z-index:400;display:none;box-shadow:0 8px 32px rgba(0,0,0,.6);min-width:200px;max-width:260px; }
+#ann-popup.show { display:block; }
+#ann-sel-text { font-size:11px;color:var(--ui);margin-bottom:7px;font-style:italic;max-height:48px;overflow:hidden;line-height:1.4;border-bottom:1px solid var(--border);padding-bottom:7px; }
+#ann-note { width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Crimson Pro',serif;font-size:14px;padding:5px 8px;border-radius:4px;resize:none;height:56px;margin-bottom:7px;outline:none;transition:border-color .2s; }
+#ann-note:focus { border-color:var(--chapter); }
+#ann-note::placeholder { color:var(--ui); }
+.ann-btns { display:flex;gap:6px;justify-content:flex-end; }
+.abtn { font-family:'Raleway',sans-serif;font-size:11px;letter-spacing:.04em;padding:4px 10px;border-radius:4px;cursor:pointer;border:1px solid var(--border);transition:all .2s; }
+.abtn-cancel { background:none;color:var(--ui); }
+.abtn-cancel:hover { color:var(--text); }
+.abtn-save { background:var(--chapter);color:#1a1a1a;border-color:var(--chapter);font-weight:500; }
+.abtn-save:hover { background:#89cbf0; }
+
+/* ── FONT PANEL ── */
+#font-panel { position:fixed;top:52px;right:14px;background:var(--panel-bg);border:1px solid var(--border);border-radius:8px;padding:13px 14px;z-index:300;display:none;box-shadow:0 8px 28px rgba(0,0,0,.5);min-width:175px; }
 #font-panel.show { display:block; }
-.font-panel-label { font-family:'Raleway',sans-serif;font-size:10px;color:var(--ui);letter-spacing:.1em;text-transform:uppercase;margin-bottom:9px; }
-.font-size-row { display:flex;align-items:center;gap:9px; }
-.font-size-btn { background:var(--surface);border:1px solid var(--border);color:var(--text);width:28px;height:28px;border-radius:4px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .2s; }
-.font-size-btn:hover { border-color:var(--chapter);color:var(--chapter); }
-#font-size-display { font-family:'Raleway',sans-serif;font-size:12px;color:var(--text);flex:1;text-align:center; }
-
-/* CONTENT OVERRIDES — force all epub styles to match our theme */
-.col-frame * { color:var(--text) !important; background:transparent !important; }
-.col-frame { font-family:'Crimson Pro',Georgia,serif; }
-.col-frame p,
-.col-frame div,
-.col-frame span,
-.col-frame li { font-family:'Crimson Pro',Georgia,serif !important; }
-.col-frame a { color:var(--chapter) !important; text-decoration:none !important; pointer-events:none; }
-.col-frame img { max-width:100% !important; max-height:40vh !important; height:auto !important; display:block; margin:.8em auto; }
-.col-frame p { margin-bottom:0; hyphens:auto; -webkit-hyphens:auto; text-align:justify; }
-.col-frame p+p { text-indent:1.5em; }
-.col-frame h1,.col-frame h2 { font-family:'Raleway',sans-serif !important; font-size:14px !important; font-weight:400 !important; color:var(--chapter) !important; letter-spacing:.12em !important; text-transform:uppercase !important; text-align:center !important; margin:0 0 24px !important; line-height:1.5 !important; text-indent:0 !important; }
-.col-frame h3,.col-frame h4,.col-frame h5,.col-frame h6 { font-family:'Raleway',sans-serif !important; font-size:11px !important; font-weight:400 !important; color:var(--chapter) !important; letter-spacing:.1em !important; text-transform:uppercase !important; margin:1.2em 0 .5em !important; text-indent:0 !important; }
-.col-frame ul,.col-frame ol { margin:.4em 0 .4em 1.3em; }
-.col-frame li { margin-bottom:.2em; }
-.col-frame table { width:100%;border-collapse:collapse;margin:.8em 0;font-size:13px !important; }
-.col-frame td,.col-frame th { border:1px solid var(--border);padding:4px 7px;text-align:left; }
-.col-frame blockquote { border-left:3px solid var(--chapter);padding-left:12px;margin:.8em 0;opacity:.85; }
-.col-frame hr { border:none;border-top:1px solid var(--border);margin:1.2em 0; }
-.col-frame sup,.col-frame sub { font-size:.65em; }
-.col-frame sup { vertical-align:super; }
-.col-frame sub { vertical-align:sub; }
-.col-frame .annotated-text { background:var(--highlight) !important; border-bottom:1px solid var(--highlight-border) !important; cursor:pointer; border-radius:1px; padding:0 1px; }
-.col-frame .annotated-text:hover { background:rgba(104,181,232,.35) !important; }
+.fp-label { font-family:'Raleway',sans-serif;font-size:10px;color:var(--ui);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px; }
+.fp-row { display:flex;align-items:center;gap:8px; }
+.fp-btn { background:var(--surface);border:1px solid var(--border);color:var(--text);width:28px;height:28px;border-radius:4px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .2s; }
+.fp-btn:hover { border-color:var(--chapter);color:var(--chapter); }
+#fp-display { font-family:'Raleway',sans-serif;font-size:12px;color:var(--text);flex:1;text-align:center; }
 </style>
 </head>
 <body>
 
+<!-- Upload -->
 <div id="upload-overlay">
   <div id="drop-zone" onclick="document.getElementById('file-input').click()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m0 0L9 11m3-3l3 3M6 20h12a2 2 0 002-2V8a2 2 0 00-.586-1.414l-5-5A2 2 0 0011 1H6a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
@@ -173,6 +191,7 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   <div id="load-status"></div>
 </div>
 
+<!-- Topbar -->
 <div id="topbar">
   <button id="close-btn">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
@@ -181,27 +200,28 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   <div id="book-title-top">—</div>
   <div class="topbar-icons">
     <button class="tb-btn" id="btn-search" title="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></button>
-    <button class="tb-btn" id="btn-font" title="Font size"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V7m0 0h5m-5 0l5 13M20 20l-6-13m6 13h-6m0 0l-2-4.33"/></svg></button>
+    <button class="tb-btn" id="btn-font" title="Font size"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V7m0 0h5m-5 0l5 13M20 20l-6-13m6 13h-6"/></svg></button>
     <button class="tb-btn" id="btn-toc" title="Contents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-    <button class="tb-btn" id="btn-annotations-open" title="Annotations"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
-    <button class="tb-btn" id="btn-bookmark" title="Bookmark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></button>
+    <button class="tb-btn" id="btn-ann" title="Annotations"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
   </div>
 </div>
 
+<!-- Reader -->
 <div id="reader">
   <div id="page-area">
     <div id="zone-prev"></div>
     <div id="zone-next"></div>
     <button class="page-arrow" id="arrow-prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M15 18l-6-6 6-6"/></svg></button>
     <button class="page-arrow" id="arrow-next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M9 18l6-6-6-6"/></svg></button>
-    <div id="col-left"><div class="col-frame" id="frame-left"></div></div>
-    <div id="col-right"><div class="col-frame" id="frame-right"></div></div>
+    <div id="col-left"><div class="col-content" id="content-left"></div></div>
+    <div id="col-right"><div class="col-content" id="content-right"></div></div>
   </div>
 </div>
 
+<!-- Bottombar -->
 <div id="bottombar">
   <div id="chapter-info">
-    <div id="chapter-thumb"><span id="thumb-emoji">📖</span></div>
+    <div id="chapter-thumb">📖</div>
     <div id="chapter-text-info">
       <div id="chapter-name-bottom">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -218,6 +238,7 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   <div id="page-count-bottom">—</div>
 </div>
 
+<!-- TOC Panel -->
 <div class="panel" id="toc-panel">
   <div class="panel-header">
     <span class="panel-title">Table of Contents</span>
@@ -226,70 +247,91 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   <div class="panel-body" id="toc-list"></div>
 </div>
 
-<div class="panel" id="annotations-panel">
+<!-- Annotations Panel -->
+<div class="panel" id="ann-panel">
   <div class="panel-header">
     <span class="panel-title">Annotations</span>
-    <button class="panel-close" id="annotations-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg></button>
+    <button class="panel-close" id="ann-panel-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg></button>
   </div>
-  <div class="panel-body" id="annotations-list"></div>
+  <div class="panel-body" id="ann-list"></div>
 </div>
 
-<div id="annotation-popup">
-  <div id="ann-selected-text"></div>
-  <textarea id="ann-note-input" placeholder="Add a note (optional)…"></textarea>
-  <div class="ann-popup-btns">
-    <button class="ann-btn ann-btn-cancel" id="ann-cancel">Cancel</button>
-    <button class="ann-btn ann-btn-save" id="ann-save">Highlight</button>
+<!-- Annotation Popup -->
+<div id="ann-popup">
+  <div id="ann-sel-text"></div>
+  <textarea id="ann-note" placeholder="Add a note (optional)…"></textarea>
+  <div class="ann-btns">
+    <button class="abtn abtn-cancel" id="ann-cancel">Cancel</button>
+    <button class="abtn abtn-save" id="ann-save">Highlight</button>
   </div>
 </div>
 
+<!-- Font Panel -->
 <div id="font-panel">
-  <div class="font-panel-label">Font Size</div>
-  <div class="font-size-row">
-    <button class="font-size-btn" id="font-decrease">−</button>
-    <div id="font-size-display">18px</div>
-    <button class="font-size-btn" id="font-increase">+</button>
+  <div class="fp-label">Font Size</div>
+  <div class="fp-row">
+    <button class="fp-btn" id="fp-dec">−</button>
+    <div id="fp-display">18px</div>
+    <button class="fp-btn" id="fp-inc">+</button>
   </div>
 </div>
 
 <script>
-const S = { pages:[], spread:0, annotations:[], toc:[], fontSize:18, uiVisible:false, bookTitle:'' };
+// ═══════════════ STATE ═══════════════
+const S = {
+  chapters: [],   // [{html, label, spineIdx}]  — one per spine item
+  pair: 0,        // current pair index (left = pair*2, right = pair*2+1)
+  annotations: JSON.parse(localStorage.getItem('epub_annotations') || '[]'),
+  toc: [],
+  fontSize: 18,
+  uiVisible: false,
+  bookTitle: '',
+};
 
-// ── UPLOAD ──
+function saveAnnotations() {
+  try { localStorage.setItem('epub_annotations', JSON.stringify(S.annotations)); } catch(e){}
+}
+
+// ═══════════════ UPLOAD ═══════════════
 const uploadOverlay = document.getElementById('upload-overlay');
-document.getElementById('drop-zone').addEventListener('dragover', e=>{e.preventDefault();e.currentTarget.classList.add('dragover');});
-document.getElementById('drop-zone').addEventListener('dragleave', e=>e.currentTarget.classList.remove('dragover'));
-document.getElementById('drop-zone').addEventListener('drop', e=>{
+document.getElementById('drop-zone').addEventListener('dragover', e => { e.preventDefault(); e.currentTarget.classList.add('dragover'); });
+document.getElementById('drop-zone').addEventListener('dragleave', e => e.currentTarget.classList.remove('dragover'));
+document.getElementById('drop-zone').addEventListener('drop', e => {
   e.preventDefault(); e.currentTarget.classList.remove('dragover');
-  const f=e.dataTransfer.files[0]; if(f&&f.name.endsWith('.epub')) loadEpub(f);
+  const f = e.dataTransfer.files[0];
+  if (f && f.name.endsWith('.epub')) loadEpub(f);
 });
-document.getElementById('file-input').addEventListener('change', e=>{ if(e.target.files[0]) loadEpub(e.target.files[0]); });
+document.getElementById('file-input').addEventListener('change', e => { if (e.target.files[0]) loadEpub(e.target.files[0]); });
 
 async function loadEpub(file) {
   const status = document.getElementById('load-status');
-  status.textContent = 'Loading EPUB…';
+  status.textContent = 'Loading…';
   try {
     const zip = await JSZip.loadAsync(file);
     const parser = new DOMParser();
 
+    // OPF path
     const containerXml = await zip.file('META-INF/container.xml').async('string');
-    const containerDoc = parser.parseFromString(containerXml, 'application/xml');
-    const opfPath = containerDoc.querySelector('rootfile').getAttribute('full-path');
-    const opfBase = opfPath.includes('/') ? opfPath.substring(0, opfPath.lastIndexOf('/')+1) : '';
+    const opfPath = parser.parseFromString(containerXml, 'application/xml').querySelector('rootfile').getAttribute('full-path');
+    const opfBase = opfPath.includes('/') ? opfPath.substring(0, opfPath.lastIndexOf('/') + 1) : '';
 
+    // OPF
     const opfXml = await zip.file(opfPath).async('string');
     const opfDoc = parser.parseFromString(opfXml, 'application/xml');
 
+    // Title
     const titleEl = opfDoc.querySelector('title') || opfDoc.querySelector('dc\\:title');
-    S.bookTitle = titleEl ? titleEl.textContent.trim() : file.name.replace('.epub','');
+    S.bookTitle = titleEl ? titleEl.textContent.trim() : file.name.replace('.epub', '');
     document.getElementById('book-title-top').textContent = S.bookTitle;
 
     // Manifest
     const manifest = {};
     opfDoc.querySelectorAll('item').forEach(item => {
-      const id = item.getAttribute('id');
-      const href = item.getAttribute('href');
-      manifest[id] = { href: opfBase+href, rawHref: href, mediaType: item.getAttribute('media-type') };
+      manifest[item.getAttribute('id')] = {
+        href: opfBase + item.getAttribute('href'),
+        rawHref: item.getAttribute('href'),
+        mediaType: item.getAttribute('media-type'),
+      };
     });
 
     // Cover
@@ -302,296 +344,219 @@ async function loadEpub(file) {
           document.getElementById('chapter-thumb').innerHTML = `<img src="${URL.createObjectURL(blob)}">`;
         }
       }
-    } catch(e){}
+    } catch(e) {}
 
-    // Spine
-    const spineIds = [];
-    opfDoc.querySelectorAll('spine itemref').forEach(ref => spineIds.push(ref.getAttribute('idref')));
+    // Pre-load all images
+    const imageMap = {};
+    const imgJobs = [];
+    zip.forEach((relPath, entry) => {
+      if (/\.(jpe?g|png|gif|webp|svg)$/i.test(relPath) && !entry.dir) {
+        imgJobs.push(entry.async('blob').then(b => { imageMap[relPath] = URL.createObjectURL(b); }));
+      }
+    });
+    await Promise.all(imgJobs);
 
-    // TOC from NCX
+    // TOC (NCX)
     S.toc = [];
     const ncxId = opfDoc.querySelector('spine')?.getAttribute('toc');
     if (ncxId && manifest[ncxId]) {
       try {
         const ncxXml = await zip.file(manifest[ncxId].href).async('string');
-        const ncxDoc = parser.parseFromString(ncxXml, 'application/xml');
-        ncxDoc.querySelectorAll('navPoint').forEach(np => {
+        parser.parseFromString(ncxXml, 'application/xml').querySelectorAll('navPoint').forEach(np => {
           const label = np.querySelector('navLabel text')?.textContent?.trim() || '';
           const src = np.querySelector('content')?.getAttribute('src') || '';
           S.toc.push({ label, href: opfBase + src.split('#')[0] });
         });
-      } catch(e){}
+      } catch(e) {}
     }
 
-    // Build image blob map for entire zip
-    const imageMap = {};
-    const imagePromises = [];
-    zip.forEach((relPath, zipEntry) => {
-      if (/\.(jpe?g|png|gif|svg|webp)$/i.test(relPath) && !zipEntry.dir) {
-        imagePromises.push(
-          zipEntry.async('blob').then(blob => { imageMap[relPath] = URL.createObjectURL(blob); })
-        );
-      }
-    });
-    await Promise.all(imagePromises);
+    // Spine → chapters
+    const spineIds = [];
+    opfDoc.querySelectorAll('spine itemref').forEach(ref => spineIds.push(ref.getAttribute('idref')));
 
-    // Load spine content
-    status.textContent = 'Paginating content…';
-    S.pages = [];
-
-    // We need the column height before paginating
-    const colHeight = window.innerHeight; // we'll use innerHeight as max page height
-
+    S.chapters = [];
     for (let si = 0; si < spineIds.length; si++) {
       const id = spineIds[si];
       if (!manifest[id]) continue;
       const itemHref = manifest[id].href;
-
       try {
         let html = await zip.file(itemHref)?.async('string');
         if (!html) continue;
 
-        // Replace image srcs with blob URLs
-        html = html.replace(/(<img[^>]*\s+src=["'])([^"']+)(["'])/gi, (match, pre, src, post) => {
-          const resolved = resolveHref(itemHref, src);
-          const blobUrl = imageMap[resolved] || imageMap[src] || imageMap[opfBase+src];
-          return blobUrl ? pre + blobUrl + post : match;
-        });
-        html = html.replace(/(<image[^>]*\s+(?:xlink:)?href=["'])([^"']+)(["'])/gi, (match, pre, src, post) => {
-          const resolved = resolveHref(itemHref, src);
-          const blobUrl = imageMap[resolved] || imageMap[src];
-          return blobUrl ? pre + blobUrl + post : match;
+        // Swap image srcs → blob URLs
+        html = html.replace(/(<img[^>]+src=["'])([^"']+)(["'])/gi, (m, pre, src, post) => {
+          const url = imageMap[resolveHref(itemHref, src)] || imageMap[src] || imageMap[opfBase + src];
+          return url ? pre + url + post : m;
         });
 
-        // Parse
-        let bodyHtml = '';
+        // Parse body
         const doc = parser.parseFromString(html, 'text/html');
+        doc.querySelectorAll('script, style, link').forEach(el => el.remove());
         const body = doc.querySelector('body');
-        if (body) {
-          // Remove scripts and styles
-          body.querySelectorAll('script,style,link').forEach(el=>el.remove());
-          bodyHtml = body.innerHTML;
-        } else {
-          bodyHtml = html.replace(/<[^>]*>/g,' ');
-        }
+        const bodyHtml = body ? body.innerHTML : '';
 
-        // Find chapter label
-        let chapterLabel = '';
+        // Chapter label
+        let label = '';
         for (const t of S.toc) {
           if (t.href === itemHref || t.href.endsWith(itemHref.split('/').pop())) {
-            chapterLabel = t.label; break;
+            label = t.label; break;
           }
         }
 
-        // Paginate
-        const chunks = await paginateHtml(bodyHtml, chapterLabel, si, colHeight);
-        S.pages.push(...chunks);
-
-      } catch(e){ console.warn('spine error', e); }
+        if (bodyHtml.trim().length > 20) {
+          S.chapters.push({ html: bodyHtml, label, spineIdx: si, href: itemHref });
+        }
+      } catch(e) { console.warn(e); }
     }
 
     buildTocPanel();
     status.textContent = '';
     uploadOverlay.classList.add('hidden');
-    S.spread = 0;
-    renderSpread();
+    S.pair = 0;
+    renderPair();
+
   } catch(err) {
     console.error(err);
-    document.getElementById('load-status').textContent = 'Could not load EPUB. Please try another file.';
+    document.getElementById('load-status').textContent = 'Could not load EPUB.';
   }
 }
 
-function resolveHref(base, relative) {
-  if (!relative || relative.startsWith('http') || relative.startsWith('data:') || relative.startsWith('blob:')) return relative;
-  const baseParts = base.split('/'); baseParts.pop();
-  for (const p of relative.split('/')) {
-    if (p==='..') baseParts.pop();
-    else if (p!=='.') baseParts.push(p);
+function resolveHref(base, rel) {
+  if (!rel || rel.startsWith('http') || rel.startsWith('data:') || rel.startsWith('blob:')) return rel;
+  const parts = base.split('/'); parts.pop();
+  for (const p of rel.split('/')) {
+    if (p === '..') parts.pop();
+    else if (p !== '.') parts.push(p);
   }
-  return baseParts.join('/');
+  return parts.join('/');
 }
 
-// ── PAGINATION ──
-// Render into hidden measurer, split at natural element boundaries
-async function paginateHtml(bodyHtml, chapterLabel, spineIdx, totalHeight) {
-  const PADDING_V = 104; // 52px top + 52px bottom
-  const maxH = totalHeight - PADDING_V;
-
-  // Create a hidden measurer column (same width as half the screen)
-  const measurer = document.createElement('div');
-  measurer.className = 'col-frame';
-  measurer.style.cssText = `
-    position:fixed; left:-9999px; top:0;
-    width:${Math.floor(window.innerWidth/2)}px;
-    visibility:hidden; pointer-events:none; z-index:-1;
-    height:auto; overflow:visible;
-  `;
-  document.body.appendChild(measurer);
-
-  const wrapper = document.createElement('div');
-  wrapper.innerHTML = bodyHtml;
-
-  // Get top-level child elements
-  const children = Array.from(wrapper.childNodes).filter(n =>
-    n.nodeType === Node.ELEMENT_NODE ||
-    (n.nodeType === Node.TEXT_NODE && n.textContent.trim().length > 0)
-  );
-
-  const chunks = [];
-  let currentChunkHtml = '';
-  measurer.innerHTML = '';
-
-  for (const child of children) {
-    const childHtml = child.nodeType === Node.TEXT_NODE
-      ? `<p>${child.textContent}</p>`
-      : child.outerHTML;
-
-    const testHtml = currentChunkHtml + childHtml;
-    measurer.innerHTML = testHtml;
-
-    if (measurer.scrollHeight > maxH && currentChunkHtml !== '') {
-      // Current element would overflow — flush current chunk
-      chunks.push({ html: currentChunkHtml, chapterLabel, spineIdx });
-      currentChunkHtml = '';
-      measurer.innerHTML = '';
-
-      // Now try to fit this element alone — if it's a large paragraph, split it
-      measurer.innerHTML = childHtml;
-      if (measurer.scrollHeight > maxH && child.nodeName === 'P') {
-        // Split paragraph by sentences/words
-        const subChunks = splitParagraph(child, maxH, measurer, chapterLabel, spineIdx);
-        chunks.push(...subChunks.slice(0, -1));
-        const last = subChunks[subChunks.length - 1];
-        if (last) {
-          currentChunkHtml = last.html;
-          measurer.innerHTML = currentChunkHtml;
-        }
-      } else {
-        currentChunkHtml = childHtml;
-      }
-    } else {
-      currentChunkHtml = testHtml;
-    }
-  }
-
-  // Flush remainder
-  if (currentChunkHtml.trim()) {
-    chunks.push({ html: currentChunkHtml, chapterLabel, spineIdx });
-  }
-
-  document.body.removeChild(measurer);
-  return chunks.length ? chunks : [{ html: '', chapterLabel, spineIdx }];
-}
-
-function splitParagraph(paraEl, maxH, measurer, chapterLabel, spineIdx) {
-  const chunks = [];
-  const words = paraEl.innerHTML.split(/(\s+)/);
-  let acc = '';
-
-  for (const word of words) {
-    const test = acc + word;
-    const testP = `<p>${test}</p>`;
-    measurer.innerHTML = testP;
-    if (measurer.scrollHeight > maxH && acc !== '') {
-      chunks.push({ html: `<p>${acc.trim()}</p>`, chapterLabel, spineIdx });
-      acc = word;
-    } else {
-      acc = test;
-    }
-  }
-  if (acc.trim()) chunks.push({ html: `<p>${acc.trim()}</p>`, chapterLabel, spineIdx });
-  return chunks.length ? chunks : [{ html: paraEl.outerHTML, chapterLabel, spineIdx }];
-}
-
-// ── RENDER ──
-function renderSpread() {
-  renderPage('frame-left', S.spread * 2);
-  renderPage('frame-right', S.spread * 2 + 1);
+// ═══════════════ RENDER ═══════════════
+function renderPair() {
+  const li = S.pair * 2;
+  const ri = li + 1;
+  renderChapter('content-left', 'col-left', li);
+  renderChapter('content-right', 'col-right', ri);
   updateBottomBar();
   updateProgress();
 }
 
-function renderPage(frameId, pageIdx) {
-  const frame = document.getElementById(frameId);
-  frame.style.fontSize = S.fontSize + 'px';
-  if (pageIdx >= S.pages.length || pageIdx < 0) { frame.innerHTML = ''; return; }
-  frame.innerHTML = S.pages[pageIdx].html;
-  // Re-apply annotations
-  S.annotations.filter(a=>a.pageIndex===pageIdx).forEach(a=>highlightInFrame(frame, a.selectedText, a.id));
-  // Re-attach selection
-  frame.addEventListener('mouseup', e => handleSelect(e, pageIdx));
+function renderChapter(contentId, colId, idx) {
+  const content = document.getElementById(contentId);
+  const col = document.getElementById(colId);
+  col.scrollTop = 0;
+  content.style.fontSize = S.fontSize + 'px';
+
+  if (idx < 0 || idx >= S.chapters.length) {
+    content.innerHTML = '';
+    return;
+  }
+
+  content.innerHTML = S.chapters[idx].html;
+
+  // Re-apply annotations for this chapter
+  S.annotations
+    .filter(a => a.chapterIdx === idx)
+    .forEach(a => applyHighlight(content, a));
+
+  // Attach text selection listener
+  content.addEventListener('mouseup', e => handleSelect(e, idx));
 }
 
-function highlightInFrame(container, text, annId) {
-  if (!text || text.length < 2) return;
+// ═══════════════ HIGHLIGHT ═══════════════
+function applyHighlight(container, ann) {
+  if (!ann.selectedText || ann.selectedText.length < 2) return;
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
   let node;
   while (node = walker.nextNode()) {
-    const idx = node.textContent.indexOf(text);
+    const idx = node.textContent.indexOf(ann.selectedText);
     if (idx !== -1) {
       try {
-        const span = document.createElement('span');
-        span.className = 'annotated-text'; span.dataset.annId = annId;
+        const span = document.createElement('mark');
+        span.className = 'ann-highlight';
+        span.dataset.annId = ann.id;
+        if (ann.note) span.title = ann.note;
         const range = document.createRange();
-        range.setStart(node, idx); range.setEnd(node, idx+text.length);
+        range.setStart(node, idx);
+        range.setEnd(node, idx + ann.selectedText.length);
         range.surroundContents(span);
-        span.addEventListener('click', e=>{ e.stopPropagation(); openAnnotationsPanel(); });
-      } catch(e){}
-      break;
+        span.addEventListener('click', e => {
+          e.stopPropagation();
+          openAnnPanel();
+        });
+      } catch(e) {}
+      return; // only highlight first occurrence
     }
   }
 }
 
-// ── NAVIGATION ──
-const totalSpreads = () => Math.ceil(S.pages.length / 2);
+// ═══════════════ NAVIGATION ═══════════════
+const totalPairs = () => Math.ceil(S.chapters.length / 2);
 
-function goNext() { if(S.spread<totalSpreads()-1){ animateTurn('next'); S.spread++; renderSpread(); } }
-function goPrev() { if(S.spread>0){ animateTurn('prev'); S.spread--; renderSpread(); } }
+function goNext() {
+  if (S.pair < totalPairs() - 1) {
+    animateTurn('next');
+    S.pair++;
+    renderPair();
+  }
+}
+function goPrev() {
+  if (S.pair > 0) {
+    animateTurn('prev');
+    S.pair--;
+    renderPair();
+  }
+}
 
 function animateTurn(dir) {
   const area = document.getElementById('page-area');
-  area.style.cssText = `opacity:0;transform:translateX(${dir==='next'?'-12px':'12px'})`;
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    area.style.cssText = 'transition:opacity .18s ease,transform .18s ease;opacity:1;transform:translateX(0)';
-    setTimeout(()=>{ area.style.cssText=''; }, 220);
+  area.style.opacity = '0';
+  area.style.transform = `translateX(${dir === 'next' ? '-12px' : '12px'})`;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    area.style.transition = 'opacity .18s ease, transform .18s ease';
+    area.style.opacity = '1';
+    area.style.transform = 'translateX(0)';
+    setTimeout(() => { area.style.transition = ''; }, 220);
   }));
 }
 
 function updateProgress() {
-  const total = totalSpreads();
-  const pct = total>1 ? (S.spread/(total-1))*100 : 0;
-  document.getElementById('progress-bar-fill').style.width = pct+'%';
-  document.getElementById('progress-thumb').style.left = pct+'%';
-  const li = S.spread*2+1, ri=li+1;
-  document.getElementById('page-count-bottom').textContent = `${li}–${Math.min(ri,S.pages.length)} of ${S.pages.length}`;
+  const total = totalPairs();
+  const pct = total > 1 ? (S.pair / (total - 1)) * 100 : 0;
+  document.getElementById('progress-bar-fill').style.width = pct + '%';
+  document.getElementById('progress-thumb').style.left = pct + '%';
+  const li = S.pair * 2 + 1;
+  const ri = li + 1;
+  document.getElementById('page-count-bottom').textContent =
+    `Chapter ${li}–${Math.min(ri, S.chapters.length)} of ${S.chapters.length}`;
 }
 
 function updateBottomBar() {
-  let label='';
-  for(let i=S.spread*2;i>=0;i--){ if(S.pages[i]?.chapterLabel){ label=S.pages[i].chapterLabel; break; } }
-  document.getElementById('chapter-name-text').textContent = label||S.bookTitle||'—';
-  const rem = totalSpreads()-S.spread-1;
-  document.getElementById('chapter-pages-remaining').textContent = rem>0 ? `${rem*2} pages remaining` : 'Last page';
+  const ch = S.chapters[S.pair * 2];
+  document.getElementById('chapter-name-text').textContent = ch?.label || S.bookTitle || '—';
+  const rem = totalPairs() - S.pair - 1;
+  document.getElementById('chapter-pages-remaining').textContent =
+    rem > 0 ? `${rem * 2} chapters remaining` : 'Last section';
 }
 
-document.getElementById('progress-bar-wrap').addEventListener('click', e=>{
-  const r=e.currentTarget.getBoundingClientRect();
-  S.spread=Math.round(((e.clientX-r.left)/r.width)*(totalSpreads()-1));
-  renderSpread();
+document.getElementById('progress-bar-wrap').addEventListener('click', e => {
+  const r = e.currentTarget.getBoundingClientRect();
+  S.pair = Math.round(((e.clientX - r.left) / r.width) * (totalPairs() - 1));
+  renderPair();
 });
-document.getElementById('btn-first').addEventListener('click', ()=>{ S.spread=0; renderSpread(); });
-document.getElementById('btn-last').addEventListener('click', ()=>{ S.spread=totalSpreads()-1; renderSpread(); });
+document.getElementById('btn-first').addEventListener('click', () => { S.pair = 0; renderPair(); });
+document.getElementById('btn-last').addEventListener('click', () => { S.pair = totalPairs() - 1; renderPair(); });
 
-// ── UI CHROME ──
+// ═══════════════ UI CHROME ═══════════════
 function showUI() {
-  S.uiVisible=true;
+  S.uiVisible = true;
   document.getElementById('topbar').classList.add('visible');
   document.getElementById('bottombar').classList.add('visible');
   document.getElementById('arrow-prev').classList.add('show');
   document.getElementById('arrow-next').classList.add('show');
 }
 function hideUI() {
-  S.uiVisible=false;
+  S.uiVisible = false;
   document.getElementById('topbar').classList.remove('visible');
   document.getElementById('bottombar').classList.remove('visible');
   document.getElementById('arrow-prev').classList.remove('show');
@@ -600,78 +565,102 @@ function hideUI() {
   document.getElementById('font-panel').classList.remove('show');
 }
 
-document.getElementById('page-area').addEventListener('click', e=>{
-  if(!S.pages.length) return;
-  if(e.target.closest('.annotated-text')||e.target.closest('.page-arrow')) return;
-  const pct = e.clientX/window.innerWidth;
-  if(pct<0.14) goPrev();
-  else if(pct>0.86) goNext();
-  else { if(S.uiVisible) hideUI(); else showUI(); }
+document.getElementById('page-area').addEventListener('click', e => {
+  if (!S.chapters.length) return;
+  if (e.target.closest('.ann-highlight') || e.target.closest('.page-arrow')) return;
+  const pct = e.clientX / window.innerWidth;
+  if (pct < 0.10) goPrev();
+  else if (pct > 0.90) goNext();
+  else { if (S.uiVisible) hideUI(); else showUI(); }
 });
-document.getElementById('arrow-prev').addEventListener('click', e=>{ e.stopPropagation(); goPrev(); });
-document.getElementById('arrow-next').addEventListener('click', e=>{ e.stopPropagation(); goNext(); });
-document.addEventListener('keydown', e=>{
-  if(!S.pages.length) return;
-  if(['ArrowRight','ArrowDown',' '].includes(e.key)){ e.preventDefault(); goNext(); }
-  if(['ArrowLeft','ArrowUp'].includes(e.key)){ e.preventDefault(); goPrev(); }
-  if(e.key==='Escape'){ hideUI(); document.getElementById('annotation-popup').classList.remove('show'); }
+document.getElementById('arrow-prev').addEventListener('click', e => { e.stopPropagation(); goPrev(); });
+document.getElementById('arrow-next').addEventListener('click', e => { e.stopPropagation(); goNext(); });
+
+document.addEventListener('keydown', e => {
+  if (!S.chapters.length) return;
+  if (['ArrowRight', 'ArrowDown', ' '].includes(e.key)) { e.preventDefault(); goNext(); }
+  if (['ArrowLeft', 'ArrowUp'].includes(e.key)) { e.preventDefault(); goPrev(); }
+  if (e.key === 'Escape') { hideUI(); document.getElementById('ann-popup').classList.remove('show'); }
 });
-let tX=0;
-document.getElementById('page-area').addEventListener('touchstart',e=>{tX=e.touches[0].clientX;},{passive:true});
-document.getElementById('page-area').addEventListener('touchend',e=>{
-  const dx=e.changedTouches[0].clientX-tX; if(Math.abs(dx)>50){ dx<0?goNext():goPrev(); }
-},{passive:true});
-document.getElementById('close-btn').addEventListener('click',()=>{
-  hideUI(); S.pages=[];S.spread=0;
-  document.getElementById('frame-left').innerHTML='';
-  document.getElementById('frame-right').innerHTML='';
-  document.getElementById('load-status').textContent='';
+
+let tX = 0;
+document.getElementById('page-area').addEventListener('touchstart', e => { tX = e.touches[0].clientX; }, { passive: true });
+document.getElementById('page-area').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tX;
+  if (Math.abs(dx) > 50) { dx < 0 ? goNext() : goPrev(); }
+}, { passive: true });
+
+document.getElementById('close-btn').addEventListener('click', () => {
+  hideUI(); S.chapters = []; S.pair = 0;
+  document.getElementById('content-left').innerHTML = '';
+  document.getElementById('content-right').innerHTML = '';
+  document.getElementById('load-status').textContent = '';
   uploadOverlay.classList.remove('hidden');
 });
 
-// ── PANELS ──
+// ═══════════════ PANELS ═══════════════
 function closeAllPanels() {
   document.getElementById('toc-panel').classList.remove('open');
-  document.getElementById('annotations-panel').classList.remove('open');
-  document.querySelectorAll('.tb-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('ann-panel').classList.remove('open');
+  document.querySelectorAll('.tb-btn').forEach(b => b.classList.remove('active'));
 }
-document.getElementById('btn-toc').addEventListener('click', e=>{
+
+document.getElementById('btn-toc').addEventListener('click', e => {
   e.stopPropagation();
-  const open=document.getElementById('toc-panel').classList.contains('open');
+  const isOpen = document.getElementById('toc-panel').classList.contains('open');
   closeAllPanels();
-  if(!open){ document.getElementById('toc-panel').classList.add('open'); e.currentTarget.classList.add('active'); }
+  if (!isOpen) { document.getElementById('toc-panel').classList.add('open'); e.currentTarget.classList.add('active'); }
 });
 document.getElementById('toc-close').addEventListener('click', closeAllPanels);
-function openAnnotationsPanel() {
-  closeAllPanels();
-  document.getElementById('annotations-panel').classList.add('open');
-  document.getElementById('btn-annotations-open').classList.add('active');
-  buildAnnotationsPanel();
-  if(!S.uiVisible) showUI();
-}
-document.getElementById('btn-annotations-open').addEventListener('click', e=>{
-  e.stopPropagation();
-  if(document.getElementById('annotations-panel').classList.contains('open')){ closeAllPanels(); return; }
-  openAnnotationsPanel();
-});
-document.getElementById('annotations-close').addEventListener('click', closeAllPanels);
-document.getElementById('btn-font').addEventListener('click', e=>{
-  e.stopPropagation(); document.getElementById('font-panel').classList.toggle('show');
-});
-document.getElementById('font-increase').addEventListener('click', ()=>{ S.fontSize=Math.min(28,S.fontSize+1); document.getElementById('font-size-display').textContent=S.fontSize+'px'; document.querySelectorAll('.col-frame').forEach(f=>f.style.fontSize=S.fontSize+'px'); });
-document.getElementById('font-decrease').addEventListener('click', ()=>{ S.fontSize=Math.max(13,S.fontSize-1); document.getElementById('font-size-display').textContent=S.fontSize+'px'; document.querySelectorAll('.col-frame').forEach(f=>f.style.fontSize=S.fontSize+'px'); });
-document.addEventListener('click', e=>{ const fp=document.getElementById('font-panel'); if(!fp.contains(e.target)&&e.target!==document.getElementById('btn-font')) fp.classList.remove('show'); });
 
-// ── TOC ──
+function openAnnPanel() {
+  closeAllPanels();
+  document.getElementById('ann-panel').classList.add('open');
+  document.getElementById('btn-ann').classList.add('active');
+  buildAnnPanel();
+  if (!S.uiVisible) showUI();
+}
+document.getElementById('btn-ann').addEventListener('click', e => {
+  e.stopPropagation();
+  if (document.getElementById('ann-panel').classList.contains('open')) { closeAllPanels(); return; }
+  openAnnPanel();
+});
+document.getElementById('ann-panel-close').addEventListener('click', closeAllPanels);
+
+document.getElementById('btn-font').addEventListener('click', e => { e.stopPropagation(); document.getElementById('font-panel').classList.toggle('show'); });
+document.getElementById('fp-inc').addEventListener('click', () => {
+  S.fontSize = Math.min(28, S.fontSize + 1);
+  document.getElementById('fp-display').textContent = S.fontSize + 'px';
+  document.querySelectorAll('.col-content').forEach(c => c.style.fontSize = S.fontSize + 'px');
+});
+document.getElementById('fp-dec').addEventListener('click', () => {
+  S.fontSize = Math.max(13, S.fontSize - 1);
+  document.getElementById('fp-display').textContent = S.fontSize + 'px';
+  document.querySelectorAll('.col-content').forEach(c => c.style.fontSize = S.fontSize + 'px');
+});
+document.addEventListener('click', e => {
+  const fp = document.getElementById('font-panel');
+  if (!fp.contains(e.target) && e.target !== document.getElementById('btn-font')) fp.classList.remove('show');
+});
+
+// ═══════════════ TOC ═══════════════
 function buildTocPanel() {
-  const list=document.getElementById('toc-list');
-  list.innerHTML='';
-  if(!S.toc.length){ list.innerHTML='<div class="no-annotations">No table of contents found.</div>'; return; }
-  S.toc.forEach(item=>{
-    const div=document.createElement('div'); div.className='toc-item'; div.textContent=item.label;
-    div.addEventListener('click', ()=>{
-      for(let i=0;i<S.pages.length;i++){
-        if(S.pages[i].chapterLabel===item.label){ S.spread=Math.floor(i/2); renderSpread(); closeAllPanels(); return; }
+  const list = document.getElementById('toc-list');
+  list.innerHTML = '';
+  if (!S.toc.length) { list.innerHTML = '<div class="no-ann">No table of contents found.</div>'; return; }
+  S.toc.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'toc-item';
+    div.textContent = item.label;
+    div.addEventListener('click', () => {
+      for (let i = 0; i < S.chapters.length; i++) {
+        if (S.chapters[i].label === item.label || S.chapters[i].href === item.href ||
+            S.chapters[i].href?.endsWith(item.href?.split('/').pop())) {
+          S.pair = Math.floor(i / 2);
+          renderPair();
+          closeAllPanels();
+          return;
+        }
       }
       closeAllPanels();
     });
@@ -679,75 +668,142 @@ function buildTocPanel() {
   });
 }
 
-// ── ANNOTATIONS ──
-let pendingAnn=null;
+// ═══════════════ ANNOTATIONS ═══════════════
+let pendingAnn = null;
 
-function handleSelect(e, pageIdx) {
-  const sel=window.getSelection();
-  if(!sel||sel.isCollapsed) return;
-  const text=sel.toString().trim();
-  if(text.length<3) return;
-  const range=sel.getRangeAt(0);
-  const rect=range.getBoundingClientRect();
-  let label='';
-  for(let i=pageIdx;i>=0;i--){ if(S.pages[i]?.chapterLabel){ label=S.pages[i].chapterLabel; break; } }
-  pendingAnn={ selectedText:text, pageIndex:pageIdx, chapterLabel:label||S.bookTitle };
-  document.getElementById('ann-selected-text').textContent='"'+(text.length>85?text.slice(0,85)+'…':text)+'"';
-  document.getElementById('ann-note-input').value='';
-  const popup=document.getElementById('annotation-popup');
-  let top=rect.top-148, left=rect.left;
-  if(top<54) top=rect.bottom+8;
-  if(left+275>window.innerWidth) left=window.innerWidth-280;
-  if(left<6) left=6;
-  popup.style.top=top+'px'; popup.style.left=left+'px';
+function handleSelect(e, chapterIdx) {
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed) return;
+  const text = sel.toString().trim();
+  if (text.length < 2) return;
+
+  const range = sel.getRangeAt(0);
+  const rect = range.getBoundingClientRect();
+
+  pendingAnn = { selectedText: text, chapterIdx };
+  document.getElementById('ann-sel-text').textContent = '"' + (text.length > 80 ? text.slice(0, 80) + '…' : text) + '"';
+  document.getElementById('ann-note').value = '';
+
+  const popup = document.getElementById('ann-popup');
+  let top = rect.top - 142, left = rect.left;
+  if (top < 54) top = rect.bottom + 8;
+  if (left + 268 > window.innerWidth) left = window.innerWidth - 272;
+  if (left < 6) left = 6;
+  popup.style.top = top + 'px';
+  popup.style.left = left + 'px';
   popup.classList.add('show');
-  setTimeout(()=>document.getElementById('ann-note-input').focus(), 40);
+  setTimeout(() => document.getElementById('ann-note').focus(), 40);
   sel.removeAllRanges();
 }
 
-document.getElementById('ann-cancel').addEventListener('click', ()=>{ document.getElementById('annotation-popup').classList.remove('show'); pendingAnn=null; });
+document.getElementById('ann-cancel').addEventListener('click', () => {
+  document.getElementById('ann-popup').classList.remove('show');
+  pendingAnn = null;
+});
+
 document.getElementById('ann-save').addEventListener('click', saveAnnotation);
-document.getElementById('ann-note-input').addEventListener('keydown', e=>{ if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)) saveAnnotation(); if(e.key==='Escape') document.getElementById('ann-cancel').click(); });
+document.getElementById('ann-note').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) saveAnnotation();
+  if (e.key === 'Escape') document.getElementById('ann-cancel').click();
+});
+
 function saveAnnotation() {
-  if(!pendingAnn) return;
-  S.annotations.push({id:Date.now().toString(),...pendingAnn,note:document.getElementById('ann-note-input').value.trim(),timestamp:new Date()});
-  document.getElementById('annotation-popup').classList.remove('show');
-  pendingAnn=null;
-  renderSpread();
+  if (!pendingAnn) return;
+  const ann = {
+    id: Date.now().toString(),
+    ...pendingAnn,
+    note: document.getElementById('ann-note').value.trim(),
+    chapterLabel: S.chapters[pendingAnn.chapterIdx]?.label || S.bookTitle,
+    timestamp: new Date().toISOString(),
+  };
+  S.annotations.push(ann);
+  saveAnnotations();
+  document.getElementById('ann-popup').classList.remove('show');
+  pendingAnn = null;
+
+  // Apply highlight immediately to the live DOM
+  const isLeft = S.pair * 2 === ann.chapterIdx;
+  const isRight = S.pair * 2 + 1 === ann.chapterIdx;
+  if (isLeft) applyHighlight(document.getElementById('content-left'), ann);
+  if (isRight) applyHighlight(document.getElementById('content-right'), ann);
 }
 
-function buildAnnotationsPanel() {
-  const list=document.getElementById('annotations-list');
-  list.innerHTML='';
-  if(!S.annotations.length){ list.innerHTML='<div class="no-annotations">No annotations yet.<br><br>Select text while reading to highlight and annotate.</div>'; return; }
-  const groups={};
-  S.annotations.forEach(a=>{ (groups[a.chapterLabel||'—']=groups[a.chapterLabel||'—']||[]).push(a); });
-  for(const [ch,anns] of Object.entries(groups)){
-    const g=document.createElement('div'); g.className='annotation-chapter-group';
-    g.innerHTML=`<div class="annotation-chapter-label">${esc(ch)}</div>`;
-    list.appendChild(g);
-    anns.forEach(a=>{
-      const item=document.createElement('div'); item.className='annotation-item';
-      item.innerHTML=`<div class="annotation-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div><div class="annotation-content"><div class="annotation-time">${ago(a.timestamp)}</div><div class="annotation-text">${esc(a.selectedText)}${a.note?'<br><em style="color:var(--ui-hover);font-size:11px">'+esc(a.note)+'</em>':''}</div></div><button class="annotation-delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6m4-6v6"/><path d="M9 6V4h6v2"/></svg></button>`;
-      item.querySelector('.annotation-delete').addEventListener('click', e=>{ e.stopPropagation(); S.annotations=S.annotations.filter(x=>x.id!==a.id); renderSpread(); buildAnnotationsPanel(); });
-      item.addEventListener('click', e=>{ if(e.target.closest('.annotation-delete')) return; S.spread=Math.floor(a.pageIndex/2); renderSpread(); closeAllPanels(); });
+function buildAnnPanel() {
+  const list = document.getElementById('ann-list');
+  list.innerHTML = '';
+  if (!S.annotations.length) {
+    list.innerHTML = '<div class="no-ann">No annotations yet.<br><br>Select any text to highlight it.</div>';
+    return;
+  }
+  const groups = {};
+  S.annotations.forEach(a => {
+    const k = a.chapterLabel || '—';
+    (groups[k] = groups[k] || []).push(a);
+  });
+  for (const [ch, anns] of Object.entries(groups)) {
+    const label = document.createElement('div');
+    label.className = 'ann-group-label';
+    label.textContent = ch;
+    list.appendChild(label);
+    anns.forEach(a => {
+      const item = document.createElement('div');
+      item.className = 'ann-item';
+      item.innerHTML = `
+        <div class="ann-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+        <div class="ann-content">
+          <div class="ann-time">${ago(a.timestamp)}</div>
+          <div class="ann-text">${esc(a.selectedText)}${a.note ? '<br><em style="color:var(--ui-hover);font-size:11px">' + esc(a.note) + '</em>' : ''}</div>
+        </div>
+        <button class="ann-del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6m4-6v6"/><path d="M9 6V4h6v2"/></svg></button>
+      `;
+      item.querySelector('.ann-del').addEventListener('click', e => {
+        e.stopPropagation();
+        S.annotations = S.annotations.filter(x => x.id !== a.id);
+        saveAnnotations();
+        renderPair();
+        buildAnnPanel();
+      });
+      item.addEventListener('click', e => {
+        if (e.target.closest('.ann-del')) return;
+        S.pair = Math.floor(a.chapterIdx / 2);
+        renderPair();
+        closeAllPanels();
+      });
       list.appendChild(item);
     });
   }
 }
-function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function ago(d){ const m=Math.floor((Date.now()-new Date(d))/60000); if(m<1)return'Just now'; if(m<60)return m+'m ago'; const h=Math.floor(m/60); if(h<24)return h+'h ago'; return Math.floor(h/24)+'d ago'; }
 
-document.addEventListener('mousedown', e=>{ const p=document.getElementById('annotation-popup'); if(p.classList.contains('show')&&!p.contains(e.target)){ p.classList.remove('show'); pendingAnn=null; } });
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function ago(ts) {
+  const m = Math.floor((Date.now() - new Date(ts)) / 60000);
+  if (m < 1) return 'Just now';
+  if (m < 60) return m + 'm ago';
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + 'h ago';
+  return Math.floor(h / 24) + 'd ago';
+}
 
-// ── SEARCH ──
-document.getElementById('btn-search').addEventListener('click', e=>{
+document.addEventListener('mousedown', e => {
+  const p = document.getElementById('ann-popup');
+  if (p.classList.contains('show') && !p.contains(e.target)) { p.classList.remove('show'); pendingAnn = null; }
+});
+
+// ═══════════════ SEARCH ═══════════════
+document.getElementById('btn-search').addEventListener('click', e => {
   e.stopPropagation();
-  const q=prompt('Search:'); if(!q) return;
-  const lower=q.toLowerCase();
-  for(let i=0;i<S.pages.length;i++){
-    const d=document.createElement('div'); d.innerHTML=S.pages[i].html;
-    if(d.textContent.toLowerCase().includes(lower)){ S.spread=Math.floor(i/2); renderSpread(); hideUI(); return; }
+  const q = prompt('Search:');
+  if (!q) return;
+  const lower = q.toLowerCase();
+  for (let i = 0; i < S.chapters.length; i++) {
+    const d = document.createElement('div');
+    d.innerHTML = S.chapters[i].html;
+    if (d.textContent.toLowerCase().includes(lower)) {
+      S.pair = Math.floor(i / 2);
+      renderPair();
+      hideUI();
+      return;
+    }
   }
   alert('Not found.');
 });
